@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>五子棋 - 双人联机</title>
-<!-- jsDelivr CDN 国内可访问 -->
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js">
-</script>
 <style>
   :root {
     --bg: #2C1810;
@@ -21,444 +18,198 @@
     --padding: 20px;
     --stone: 13px;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
     background: linear-gradient(135deg, #1a0f0a 0%, #2C1810 50%, #1a0f0a 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 12px;
-    color: var(--text);
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 12px; color: var(--text);
     -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
+    -webkit-user-select: none; user-select: none;
   }
-
   .app {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 860px;
-    width: 100%;
-    padding-top: 8px;
+    display: flex; gap: 16px; align-items: flex-start;
+    flex-wrap: wrap; justify-content: center;
+    max-width: 860px; width: 100%; padding-top: 8px;
   }
-
-  /* ===== 面板通用 ===== */
   .panel {
-    background: var(--panel-bg);
-    border-radius: 12px;
-    padding: 16px;
+    background: var(--panel-bg); border-radius: 12px; padding: 16px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.08);
   }
-
-  .side-panel {
-    width: 230px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-
-  /* ===== 标题 ===== */
+  .side-panel { width: 230px; display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
   .title {
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    color: var(--gold);
-    letter-spacing: 6px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    margin-bottom: 2px;
+    text-align: center; font-size: 26px; font-weight: bold;
+    color: var(--gold); letter-spacing: 6px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 2px;
   }
-  .subtitle {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-light);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-  }
-
-  /* ===== 棋盘 ===== */
-  .board-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  .subtitle { text-align: center; font-size: 11px; color: var(--text-light); letter-spacing: 2px; margin-bottom: 8px; }
+  .board-wrapper { display: flex; flex-direction: column; align-items: center; }
   .board-panel { padding: 10px; }
-
   canvas {
-    display: block;
-    cursor: pointer;
-    border-radius: 4px;
+    display: block; cursor: pointer; border-radius: 4px;
     touch-action: manipulation;
   }
-  canvas.disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-
-  /* ===== 区块标题 ===== */
+  canvas.disabled { cursor: not-allowed; opacity: 0.7; }
   .section-title {
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--gold);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px; font-weight: bold; color: var(--gold);
+    letter-spacing: 2px; margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1);
   }
-
-  /* ===== 按钮 ===== */
   .btn {
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 2px;
-    font-family: inherit;
-    touch-action: manipulation;
+    display: block; width: 100%; padding: 10px 14px; border: none;
+    border-radius: 8px; font-size: 13px; font-weight: bold;
+    cursor: pointer; transition: all 0.15s; letter-spacing: 2px;
+    font-family: inherit; touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
   .btn:active { transform: scale(0.97); }
-
   .btn-primary {
     background: linear-gradient(135deg, #D4A853, #B8860B);
-    color: #1a0f0a;
-    box-shadow: 0 2px 8px rgba(212,168,83,0.3);
+    color: #1a0f0a; box-shadow: 0 2px 8px rgba(212,168,83,0.3);
   }
-  .btn-primary:active { box-shadow: 0 4px 16px rgba(212,168,83,0.5); }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
   .btn-secondary {
-    background: transparent;
-    color: var(--text);
+    background: transparent; color: var(--text);
     border: 1px solid rgba(255,255,255,0.2);
   }
-  .btn-secondary:active { background: rgba(255,255,255,0.08); }
   .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn-danger {
-    background: var(--danger);
-    color: white;
-  }
-
+  .btn-danger { background: var(--danger); color: white; }
   .btn-undo {
-    background: transparent;
-    color: #F39C12;
-    border: 1px solid rgba(243,156,18,0.3);
-    font-size: 12px;
-    padding: 8px 12px;
+    background: transparent; color: #F39C12;
+    border: 1px solid rgba(243,156,18,0.3); font-size: 12px; padding: 8px 12px;
   }
   .btn-undo:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  .btn-sm {
-    display: inline-block;
-    width: auto;
-    padding: 8px 18px;
-    font-size: 13px;
-  }
-
-  /* ===== 输入框 ===== */
+  .btn-sm { display: inline-block; width: auto; padding: 8px 18px; font-size: 13px; }
   .input-row { display: flex; gap: 6px; margin-bottom: 6px; }
   .input {
-    flex: 1;
-    padding: 9px 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(0,0,0,0.3);
-    color: var(--text);
-    font-size: 13px;
-    font-family: inherit;
-    letter-spacing: 1px;
-    min-width: 0;
+    flex: 1; padding: 9px 10px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3);
+    color: var(--text); font-size: 13px; font-family: inherit;
+    letter-spacing: 1px; min-width: 0;
   }
   .input::placeholder { color: rgba(255,255,255,0.25); }
   .input:focus { outline: none; border-color: var(--gold); }
-
-  /* ===== 房间号展示 ===== */
   .room-id-display {
-    background: rgba(0,0,0,0.3);
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-    word-break: break-all;
+    background: rgba(0,0,0,0.3); border-radius: 8px;
+    padding: 10px; text-align: center; word-break: break-all;
   }
-  .room-id-label { font-size: 10px; color: var(--text-light); letter-spacing: 2px; margin-bottom: 2px; }
-  .room-id-value {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-
+  .room-id-label { font-size: 10px; color: var(--text-light); letter-spacing: 2px; }
+  .room-id-value { font-size: 16px; font-weight: bold; color: var(--gold); letter-spacing: 1px; }
   .hint { font-size: 10px; color: var(--text-light); margin-top: 4px; }
-
-  /* ===== 状态标签 ===== */
   .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    font-weight: bold;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px;
+    letter-spacing: 1px; font-weight: bold;
   }
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .status-disconnected { background: rgba(192,57,43,0.2); color: #E74C3C; }
-  .status-disconnected .status-dot { background: #E74C3C; }
-  .status-connecting { background: rgba(243,156,18,0.2); color: #F39C12; }
-  .status-connecting .status-dot { background: #F39C12; }
-  .status-connected { background: rgba(39,174,96,0.2); color: #2ECC71; }
-  .status-connected .status-dot { background: #2ECC71; }
-  .status-waiting { background: rgba(41,128,185,0.2); color: #3498DB; }
-  .status-waiting .status-dot { background: #3498DB; }
-  .status-timeout { background: rgba(231,76,60,0.2); color: #E74C3C; }
-  .status-timeout .status-dot { background: #E74C3C; animation: none; }
-
-  /* ===== 回合指示 ===== */
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .s-disconnected { background: rgba(192,57,43,0.2); color: #E74C3C; }
+  .s-disconnected .status-dot { background: #E74C3C; }
+  .s-connecting { background: rgba(243,156,18,0.2); color: #F39C12; }
+  .s-connecting .status-dot { background: #F39C12; }
+  .s-connected { background: rgba(39,174,96,0.2); color: #2ECC71; }
+  .s-connected .status-dot { background: #2ECC71; }
+  .s-waiting { background: rgba(41,128,185,0.2); color: #3498DB; }
+  .s-waiting .status-dot { background: #3498DB; }
   .turn-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-    padding: 6px;
-    border-radius: 8px;
-    background: rgba(0,0,0,0.2);
-    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    justify-content: center; padding: 6px;
+    border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 13px;
   }
-  .stone-icon {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .stone-black {
-    background: radial-gradient(circle at 38% 33%, #555, #111 60%, #000 100%);
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
-  }
-  .stone-white {
-    background: radial-gradient(circle at 38% 33%, #fff, #ddd 50%, #bbb 100%);
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.2);
-    border: 1px solid #ccc;
-  }
-
-  /* ===== 弹窗/遮罩 ===== */
+  .stone-icon { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+  .stone-black { background: radial-gradient(circle at 38% 33%, #555, #111 60%, #000 100%); box-shadow: 1px 2px 3px rgba(0,0,0,0.4); }
+  .stone-white { background: radial-gradient(circle at 38% 33%, #fff, #ddd 50%, #bbb 100%); box-shadow: 1px 2px 3px rgba(0,0,0,0.2); border: 1px solid #ccc; }
   .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.72);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(2px);
-    padding: 16px;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; backdrop-filter: blur(2px); padding: 16px;
   }
   .overlay-content {
-    background: var(--panel-bg);
-    border-radius: 16px;
-    padding: 28px 24px;
-    text-align: center;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.1);
-    max-width: 300px;
-    width: 100%;
+    background: var(--panel-bg); border-radius: 16px; padding: 28px 24px;
+    text-align: center; box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1); max-width: 300px; width: 100%;
   }
   .overlay-content .btn { margin-top: 8px; }
-  .overlay-content .btn-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .overlay-content .btn-row .btn { flex: 1; margin-top: 0; }
-
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-row .btn { flex: 1; margin-top: 0; }
   .result-icon { font-size: 44px; margin-bottom: 4px; }
-  .result-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
-  }
-
-  /* ===== Toast ===== */
+  .result-text { font-size: 20px; font-weight: bold; margin-bottom: 8px; letter-spacing: 2px; }
   .toast {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--success);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    z-index: 200;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: var(--success); color: white; padding: 8px 20px;
+    border-radius: 20px; font-size: 12px; letter-spacing: 1px;
+    z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none;
   }
   .toast.show { opacity: 1; }
   .toast.warn { background: #E67E22; }
-
-  /* ===== 连接提示 ===== */
-  .conn-tip {
-    font-size: 10px;
-    color: var(--text-light);
-    margin-top: 6px;
-    line-height: 1.5;
-  }
-  .conn-tip a { color: var(--gold); }
-
-  /* ===== 悔棋提示条 ===== */
+  .conn-tip { font-size: 10px; color: var(--text-light); margin-top: 6px; line-height: 1.5; }
   .undo-banner {
-    background: rgba(243,156,18,0.12);
-    border: 1px solid rgba(243,156,18,0.3);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    text-align: center;
-    color: #F39C12;
-    display: none;
+    background: rgba(243,156,18,0.12); border: 1px solid rgba(243,156,18,0.3);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px;
+    text-align: center; color: #F39C12; display: none;
   }
 
-  /* ==================== 手机端适配 ==================== */
+  /* ===== 手机适配 ===== */
   @media (max-width: 700px) {
-    :root {
-      --cell: 22px;
-      --padding: 16px;
-      --stone: 10px;
-    }
-
+    :root { --cell: 22px; --padding: 16px; --stone: 10px; }
     body { padding: 6px; align-items: flex-start; }
-
-    .app {
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding-top: 2px;
-    }
-
-    .side-panel {
-      width: 100%;
-      max-width: 420px;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .side-panel .panel {
-      flex: 1;
-      min-width: 140px;
-    }
-    /* 联机面板占满第一行 */
-    .side-panel .panel:first-child {
-      flex-basis: 100%;
-      order: 0;
-    }
-    /* 对局信息 */
-    .side-panel .panel:nth-child(2) {
-      flex: 2;
-      order: 1;
-    }
-    /* 悔棋按钮 */
-    .side-panel .panel:nth-child(3) {
-      flex: 1;
-      order: 2;
-      min-width: 100px;
-    }
-
+    .app { flex-direction: column; align-items: center; gap: 10px; padding-top: 2px; }
+    .side-panel { width: 100%; max-width: 420px; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+    .side-panel .panel { flex: 1; min-width: 140px; padding: 10px; }
+    .side-panel .panel:first-child { flex-basis: 100%; }
     .title { font-size: 20px; letter-spacing: 4px; }
     .subtitle { font-size: 10px; }
-
     .btn { padding: 10px 12px; font-size: 12px; letter-spacing: 1px; }
-    .btn-sm { padding: 8px 14px; }
-
     .board-panel { padding: 6px; }
-
-    /* 小屏上棋盘内嵌滚动 */
-    .side-panel .panel {
-      padding: 10px;
-    }
-
     .overlay-content { padding: 20px 16px; max-width: 260px; }
-    .overlay-content .btn-row { flex-direction: column; gap: 6px; }
-    .overlay-content .btn-row .btn { flex: none; }
+    .btn-row { flex-direction: column; gap: 6px; }
   }
-
-  /* 超小屏 (<380px) */
   @media (max-width: 400px) {
-    :root {
-      --cell: 19px;
-      --padding: 14px;
-      --stone: 9px;
-    }
+    :root { --cell: 19px; --padding: 14px; --stone: 9px; }
     .title { font-size: 18px; }
     .side-panel { gap: 6px; }
-    .side-panel .panel { padding: 8px; }
     .btn { padding: 9px 10px; font-size: 11px; }
-    .btn-sm { padding: 7px 12px; font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- 棋盘 -->
   <div class="board-wrapper">
     <div class="title">五 子 棋</div>
     <div class="subtitle">G O M O K U</div>
-    <div class="panel board-panel">
-      <canvas id="board"></canvas>
-    </div>
+    <div class="panel board-panel"><canvas id="board"></canvas></div>
   </div>
 
-  <!-- 侧边栏 -->
   <div class="side-panel">
-    <!-- 联机面板 -->
+    <!-- 联机 -->
     <div class="panel">
       <div class="section-title">⚡ 联机</div>
       <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;">
         <span style="font-size:11px;color:var(--text-light)">状态</span>
-        <span class="status-badge status-disconnected" id="statusBadge">
-          <span class="status-dot"></span>
-          <span id="statusText">未连接</span>
+        <span class="status-badge s-disconnected" id="statusBadge">
+          <span class="status-dot"></span><span id="statusText">未连接</span>
         </span>
       </div>
       <div class="conn-tip" id="connTip"></div>
       <div class="room-id-display" id="roomDisplay" style="display:none;">
-        <div class="room-id-label">房间号（点击复制）</div>
+        <div class="room-id-label">房间号（点击复制 → 发给好友）</div>
         <div class="room-id-value" id="roomIdValue"></div>
       </div>
       <div id="connActions">
         <button class="btn btn-primary" id="btnCreate" style="margin-bottom:6px;">🎮 创建房间</button>
         <div class="input-row">
-          <input class="input" id="inputRoomId" placeholder="输入房间号..." maxlength="40" inputmode="text">
+          <input class="input" id="inputRoomId" placeholder="输入房间号..." maxlength="20" inputmode="text">
           <button class="btn btn-secondary" id="btnJoin" style="width:auto;white-space:nowrap;flex-shrink:0;">加入</button>
         </div>
-        <button class="btn btn-secondary btn-sm" id="btnRetry" style="display:none;margin-top:4px;width:100%;">🔄 重试连接</button>
       </div>
+      <button class="btn btn-secondary btn-sm" id="btnRetry" style="display:none;margin-top:4px;width:100%;">🔄 重试</button>
       <button class="btn btn-danger" id="btnLeave" style="display:none;margin-top:6px;">断开</button>
     </div>
 
-    <!-- 对局面板 -->
+    <!-- 对局信息 -->
     <div class="panel">
       <div class="section-title">🎯 对局</div>
       <div class="turn-indicator" id="turnIndicator">
@@ -468,19 +219,14 @@
         <span id="yourColor">—</span>
       </div>
       <div class="undo-banner" id="undoBanner"></div>
+      <button class="btn btn-undo" id="btnUndo" disabled style="margin-top:8px;width:100%;">↩ 请求悔棋</button>
+      <div style="font-size:10px;color:var(--text-light);margin-top:4px;text-align:center;" id="undoHint">需对方同意</div>
       <button class="btn btn-secondary" id="btnRematch" style="display:none;margin-top:8px;" disabled>🔄 再来一局</button>
-    </div>
-
-    <!-- 悔棋按钮 -->
-    <div class="panel" id="undoPanel" style="display:none;">
-      <div class="section-title">↩ 操作</div>
-      <button class="btn btn-undo" id="btnUndo" disabled>↩ 请求悔棋</button>
-      <div style="font-size:10px;color:var(--text-light);margin-top:4px;text-align:center;">需对方同意</div>
     </div>
   </div>
 </div>
 
-<!-- 游戏结果弹窗 -->
+<!-- 结果弹窗 -->
 <div class="overlay" id="overlayResult" style="display:none;">
   <div class="overlay-content">
     <div class="result-icon" id="resultIcon"></div>
@@ -510,27 +256,20 @@
 
 <script>
 /* ================================================================
-   五子棋 - 双人联机 v2
-   改进: 连接优化 + 手机适配 + 悔棋确认
+   五子棋 - WebSocket 中继版 v3
+   不再依赖 PeerJS，使用自建 WebSocket 中继，国内直连
    ================================================================ */
 
 // ==================== 常量 ====================
 const BOARD_SIZE = 15;
-let CELL_SIZE = 30;
-let PADDING = 20;
-let STONE_RADIUS = 13;
-
-const EMPTY = 0;
-const BLACK = 1;
-const WHITE = 2;
+let CELL_SIZE = 30, PADDING = 20, STONE_RADIUS = 13;
+const EMPTY = 0, BLACK = 1, WHITE = 2;
 
 // ==================== DOM ====================
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
-
 const statusBadge = document.getElementById('statusBadge');
 const statusText = document.getElementById('statusText');
-const statusDot = statusBadge.querySelector('.status-dot');
 const connTip = document.getElementById('connTip');
 const roomDisplay = document.getElementById('roomDisplay');
 const roomIdValue = document.getElementById('roomIdValue');
@@ -541,72 +280,212 @@ const btnRetry = document.getElementById('btnRetry');
 const btnLeave = document.getElementById('btnLeave');
 const btnRematch = document.getElementById('btnRematch');
 const btnUndo = document.getElementById('btnUndo');
-const undoPanel = document.getElementById('undoPanel');
 const undoBanner = document.getElementById('undoBanner');
+const undoHint = document.getElementById('undoHint');
 const inputRoomId = document.getElementById('inputRoomId');
 const turnIndicator = document.getElementById('turnIndicator');
 const yourColorEl = document.getElementById('yourColor');
-
 const overlayResult = document.getElementById('overlayResult');
 const resultIcon = document.getElementById('resultIcon');
 const resultText = document.getElementById('resultText');
 const btnPlayAgain = document.getElementById('btnPlayAgain');
 const btnCloseResult = document.getElementById('btnCloseResult');
-
 const overlayUndo = document.getElementById('overlayUndo');
 const btnAcceptUndo = document.getElementById('btnAcceptUndo');
 const btnRejectUndo = document.getElementById('btnRejectUndo');
-
 const toast = document.getElementById('toast');
 
-// ==================== 游戏状态 ====================
+// ==================== 状态 ====================
 let board = [];
 let myColor = null;
 let currentTurn = BLACK;
 let gameOver = false;
-let peer = null;
-let conn = null;
-let myPeerId = null;
+let ws = null;
+let myRoomId = null;
 let lastMove = null;
-let moveHistory = [];       // 落子历史 [{row, col, color}]
+let moveHistory = [];
 let rematchRequested = false;
 let peerRematchRequested = false;
-let undoRequested = false;  // 我是否请求了悔棋
-let peerUndoRequested = false; // 对手是否请求了悔棋
-let connectTimer = null;
-let retryCount = 0;
-let MAX_RETRIES = 3;
+let undoRequested = false;
+let peerUndoRequested = false;
+let reconnectTimer = null;
 
-// ==================== 自适应尺寸 ====================
+// ==================== 画布尺寸 ====================
 function calcSizes() {
-  const maxWidth = Math.min(window.innerWidth - 24, 480);
-  const maxHeight = Math.min(window.innerHeight - 360, 480);
-  const canvasMax = Math.min(maxWidth, maxHeight);
-
+  const maxW = Math.min(window.innerWidth - 24, 480);
+  const maxH = Math.min(window.innerHeight - 360, 480);
+  const max = Math.min(maxW, maxH);
   if (window.innerWidth < 700) {
-    CELL_SIZE = Math.max(18, Math.floor((canvasMax - 32) / (BOARD_SIZE - 1)));
+    CELL_SIZE = Math.max(18, Math.floor((max - 32) / (BOARD_SIZE - 1)));
     PADDING = Math.floor(CELL_SIZE * 0.65);
     STONE_RADIUS = Math.floor(CELL_SIZE * 0.44);
   } else {
-    CELL_SIZE = 30;
-    PADDING = 20;
-    STONE_RADIUS = 13;
+    CELL_SIZE = 30; PADDING = 20; STONE_RADIUS = 13;
   }
+  const s = PADDING * 2 + CELL_SIZE * (BOARD_SIZE - 1);
+  canvas.width = s; canvas.height = s;
+  canvas.style.width = s + 'px'; canvas.style.height = s + 'px';
+}
+calcSizes();
+window.addEventListener('resize', () => { calcSizes(); drawBoard(); });
 
-  const cs = PADDING * 2 + CELL_SIZE * (BOARD_SIZE - 1);
-  canvas.width = cs;
-  canvas.height = cs;
-  canvas.style.width = cs + 'px';
-  canvas.style.height = cs + 'px';
+// ==================== WebSocket ====================
+// 服务器地址：从 URL 参数 ?server=xxx 读取，或使用当前 host
+function getServerHttpUrl() {
+  const params = new URLSearchParams(location.search);
+  const custom = params.get('server');
+  if (custom) return custom;
+  return location.protocol + '//' + location.host;
+}
+function getWsUrl() {
+  const httpUrl = getServerHttpUrl();
+  if (httpUrl.startsWith('https://')) return httpUrl.replace('https://', 'wss://');
+  return httpUrl.replace('http://', 'ws://');
 }
 
-calcSizes();
-window.addEventListener('resize', () => {
-  calcSizes();
-  drawBoard();
-});
+function connectWs(roomId) {
+  return new Promise((resolve, reject) => {
+    if (ws) {
+      try { ws.close(); } catch(e) {}
+    }
 
-// ==================== 初始化棋盘 ====================
+    const url = getWsUrl();
+    console.log('WebSocket connecting:', url);
+    const socket = new WebSocket(url);
+
+    const timeout = setTimeout(() => {
+      socket.close();
+      reject(new Error('WebSocket 连接超时'));
+    }, 15000);
+
+    socket.onopen = () => {
+      clearTimeout(timeout);
+      ws = socket;
+      console.log('WebSocket connected, joining room:', roomId);
+      socket.send(JSON.stringify({ type: 'join', room: roomId }));
+    };
+
+    socket.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        handleServerMessage(msg, resolve, reject);
+      } catch(err) {
+        console.error('Invalid message:', e.data);
+      }
+    };
+
+    socket.onclose = (e) => {
+      clearTimeout(timeout);
+      console.log('WebSocket closed:', e.code, e.reason);
+      if (myRoomId && e.code !== 1000) {
+        // 非正常断开，尝试重连
+        connTip.innerHTML = '连接断开，5秒后自动重连...';
+        setStatus('connecting');
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(() => {
+          if (myRoomId) connectWs(myRoomId).catch(() => {});
+        }, 5000);
+      } else {
+        resetAll();
+      }
+    };
+
+    socket.onerror = (err) => {
+      clearTimeout(timeout);
+      console.error('WebSocket error');
+      reject(new Error('WebSocket 连接失败'));
+    };
+  });
+}
+
+function handleServerMessage(msg, resolve, reject) {
+  switch (msg.type) {
+    case 'joined':
+      // 第一个加入房间
+      setStatus('waiting');
+      myRoomId = msg.room || myRoomId;
+      connTip.innerHTML = msg.color === 'black'
+        ? '你是黑子（先手），等待对手加入...'
+        : '你是白子（后手），等待对手加入...';
+      if (resolve) resolve(msg);
+      break;
+
+    case 'game-start':
+      // 第二个玩家加入，游戏开始
+      myColor = msg.yourColor === 'black' ? BLACK : WHITE;
+      currentTurn = BLACK;
+      initBoard();
+      setStatus('connected');
+      connActions.style.display = 'none';
+      btnLeave.style.display = 'block';
+      btnRetry.style.display = 'none';
+      connTip.innerHTML = '';
+      roomDisplay.style.display = 'none';
+      updateYourColor();
+      updateTurnDisplay();
+      updateCanvasState();
+      updateUndoUI();
+      showToast(msg.yourColor === 'black' ? '对手已加入！你先手' : '对手已加入！对方先手');
+      if (resolve) resolve(msg);
+      break;
+
+    case 'error':
+      showToast('错误：' + msg.message, 'warn');
+      connTip.innerHTML = msg.message;
+      if (reject) reject(new Error(msg.message));
+      break;
+
+    case 'move':
+      if (gameOver) return;
+      if (currentTurn === myColor) return;
+      if (board[msg.row][msg.col] !== EMPTY) return;
+      placeStone(msg.row, msg.col);
+      break;
+
+    case 'undo-request':
+      handleUndoRequest();
+      break;
+    case 'undo-accept':
+      performUndo();
+      showToast('悔棋成功！');
+      break;
+    case 'undo-reject':
+      undoRequested = false;
+      undoBanner.style.display = 'block';
+      undoBanner.textContent = '对方拒绝了悔棋';
+      setTimeout(() => { undoBanner.style.display = 'none'; }, 3000);
+      updateUndoUI();
+      showToast('对方拒绝了悔棋', 'warn');
+      break;
+
+    case 'rematch-request':
+      peerRematchRequested = true;
+      if (rematchRequested) { startNewGame(); }
+      else {
+        btnRematch.style.display = 'block';
+        btnRematch.textContent = '🔄 对手想再来一局';
+        btnRematch.disabled = false;
+      }
+      break;
+    case 'rematch-accept':
+      startNewGame();
+      break;
+
+    case 'opponent-left':
+      showToast('对手已离开房间', 'warn');
+      connTip.innerHTML = '对手断开。等待对方重新加入...';
+      setStatus('waiting');
+      break;
+  }
+}
+
+function send(data) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(data));
+  }
+}
+
+// ==================== 初始化 ====================
 function initBoard() {
   board = Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(EMPTY));
   currentTurn = BLACK;
@@ -620,262 +499,137 @@ function initBoard() {
   btnRematch.style.display = 'none';
   btnRematch.disabled = false;
   btnRematch.textContent = '🔄 再来一局';
-  btnUndo.disabled = true;
   undoBanner.style.display = 'none';
-  undoBanner.textContent = '';
   hideUndoOverlay();
   hideResultOverlay();
   drawBoard();
   updateTurnDisplay();
   updateCanvasState();
-  updateUndoButton();
+  updateUndoUI();
 }
 
 // ==================== 绘制 ====================
 function drawBoard() {
-  const w = canvas.width;
-  const h = canvas.height;
-
+  const w = canvas.width, h = canvas.height;
   ctx.fillStyle = '#DEB887';
   ctx.fillRect(0, 0, w, h);
-
-  // 木纹
   ctx.fillStyle = 'rgba(139,90,43,0.07)';
-  for (let i = 0; i < h; i += 3) {
-    ctx.fillRect(0, i, w, 1);
-  }
-
-  // 网格
+  for (let i = 0; i < h; i += 3) ctx.fillRect(0, i, w, 1);
   ctx.strokeStyle = '#5D3A1A';
   ctx.lineWidth = Math.max(0.8, CELL_SIZE / 30);
   const end = PADDING + (BOARD_SIZE - 1) * CELL_SIZE;
   for (let i = 0; i < BOARD_SIZE; i++) {
     const pos = PADDING + i * CELL_SIZE;
-    ctx.beginPath();
-    ctx.moveTo(PADDING, pos);
-    ctx.lineTo(end, pos);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(pos, PADDING);
-    ctx.lineTo(pos, end);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PADDING, pos); ctx.lineTo(end, pos); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pos, PADDING); ctx.lineTo(pos, end); ctx.stroke();
   }
-
-  // 星位
-  const starPoints = [[3,3],[3,7],[3,11],[7,3],[7,7],[7,11],[11,3],[11,7],[11,11]];
-  const starR = Math.max(2, CELL_SIZE * 0.12);
-  for (const [r, c] of starPoints) {
-    const x = PADDING + c * CELL_SIZE;
-    const y = PADDING + r * CELL_SIZE;
-    ctx.fillStyle = '#5D3A1A';
-    ctx.beginPath();
-    ctx.arc(x, y, starR, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // 坐标
-  const fontSize = Math.max(9, CELL_SIZE * 0.33);
+  const pts = [[3,3],[3,7],[3,11],[7,3],[7,7],[7,11],[11,3],[11,7],[11,11]];
+  const sr = Math.max(2, CELL_SIZE * 0.12);
   ctx.fillStyle = '#5D3A1A';
-  ctx.font = `${fontSize}px "Microsoft YaHei"`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  for (const [r,c] of pts) { ctx.beginPath(); ctx.arc(PADDING + c*CELL_SIZE, PADDING + r*CELL_SIZE, sr, 0, Math.PI*2); ctx.fill(); }
+  const fs = Math.max(9, CELL_SIZE * 0.33);
+  ctx.fillStyle = '#5D3A1A';
+  ctx.font = `${fs}px "Microsoft YaHei"`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (let i = 0; i < BOARD_SIZE; i++) {
-    ctx.fillText(String.fromCharCode(65 + i), PADDING + i * CELL_SIZE, PADDING * 0.38);
-    ctx.fillText(String(i + 1), PADDING * 0.38, PADDING + i * CELL_SIZE);
+    ctx.fillText(String.fromCharCode(65+i), PADDING + i*CELL_SIZE, PADDING*0.38);
+    ctx.fillText(String(i+1), PADDING*0.38, PADDING + i*CELL_SIZE);
   }
-
-  // 棋子
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    for (let c = 0; c < BOARD_SIZE; c++) {
-      if (board[r][c] !== EMPTY) {
-        drawStone(r, c, board[r][c]);
-      }
-    }
-  }
-
-  // 最后一手高亮
+  for (let r = 0; r < BOARD_SIZE; r++)
+    for (let c = 0; c < BOARD_SIZE; c++)
+      if (board[r][c] !== EMPTY) drawStone(r, c, board[r][c]);
   if (lastMove) {
-    const { row, col } = lastMove;
-    const x = PADDING + col * CELL_SIZE;
-    const y = PADDING + row * CELL_SIZE;
+    const x = PADDING + lastMove.col * CELL_SIZE;
+    const y = PADDING + lastMove.row * CELL_SIZE;
     ctx.strokeStyle = '#E74C3C';
-    ctx.lineWidth = Math.max(1.5, CELL_SIZE / 15);
-    ctx.beginPath();
-    ctx.arc(x, y, STONE_RADIUS + 1.5, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.lineWidth = Math.max(1.5, CELL_SIZE/15);
+    ctx.beginPath(); ctx.arc(x, y, STONE_RADIUS+1.5, 0, Math.PI*2); ctx.stroke();
   }
 }
 
 function drawStone(row, col, color) {
-  const x = PADDING + col * CELL_SIZE;
-  const y = PADDING + row * CELL_SIZE;
-
+  const x = PADDING + col*CELL_SIZE, y = PADDING + row*CELL_SIZE;
   ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.arc(x + STONE_RADIUS * 0.1, y + STONE_RADIUS * 0.1, STONE_RADIUS, 0, Math.PI * 2);
-  ctx.fill();
-
-  const gradient = ctx.createRadialGradient(
-    x - STONE_RADIUS * 0.3, y - STONE_RADIUS * 0.35, STONE_RADIUS * 0.1,
-    x, y, STONE_RADIUS
-  );
-  if (color === BLACK) {
-    gradient.addColorStop(0, '#555');
-    gradient.addColorStop(0.6, '#1a1a1a');
-    gradient.addColorStop(1, '#000');
-  } else {
-    gradient.addColorStop(0, '#ffffff');
-    gradient.addColorStop(0.5, '#e8e8e8');
-    gradient.addColorStop(1, '#b0b0b0');
-  }
-  ctx.fillStyle = gradient;
-  ctx.beginPath();
-  ctx.arc(x, y, STONE_RADIUS, 0, Math.PI * 2);
-  ctx.fill();
-
+  ctx.beginPath(); ctx.arc(x + STONE_RADIUS*0.1, y + STONE_RADIUS*0.1, STONE_RADIUS, 0, Math.PI*2); ctx.fill();
+  const g = ctx.createRadialGradient(x - STONE_RADIUS*0.3, y - STONE_RADIUS*0.35, STONE_RADIUS*0.1, x, y, STONE_RADIUS);
+  if (color === BLACK) { g.addColorStop(0,'#555'); g.addColorStop(0.6,'#1a1a1a'); g.addColorStop(1,'#000'); }
+  else { g.addColorStop(0,'#fff'); g.addColorStop(0.5,'#e8e8e8'); g.addColorStop(1,'#b0b0b0'); }
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, STONE_RADIUS, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = color === BLACK ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)';
-  ctx.beginPath();
-  ctx.arc(x - STONE_RADIUS * 0.25, y - STONE_RADIUS * 0.25, STONE_RADIUS * 0.25, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(x - STONE_RADIUS*0.25, y - STONE_RADIUS*0.25, STONE_RADIUS*0.25, 0, Math.PI*2); ctx.fill();
 }
 
-// ==================== Canvas 交互 ====================
-canvas.addEventListener('click', handleCanvasClick);
-canvas.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  handleCanvasClick(e);
-});
+// ==================== 交互 ====================
+canvas.addEventListener('click', handleClick);
+canvas.addEventListener('touchend', (e) => { e.preventDefault(); handleClick(e); });
 
-function handleCanvasClick(e) {
+function handleClick(e) {
   if (gameOver) return;
-  if (!conn) return;
-  if (currentTurn !== myColor) return;
+  if (currentTurn !== myColor) { showToast('还没轮到你', 'warn'); return; }
 
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const sx = canvas.width / rect.width, sy = canvas.height / rect.height;
+  let cx, cy;
+  if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+  else if (e.changedTouches && e.changedTouches.length > 0) { cx = e.changedTouches[0].clientX; cy = e.changedTouches[0].clientY; }
+  else { cx = e.clientX; cy = e.clientY; }
 
-  let clientX, clientY;
-  if (e.touches && e.touches.length > 0) {
-    clientX = e.touches[0].clientX;
-    clientY = e.touches[0].clientY;
-  } else if (e.changedTouches && e.changedTouches.length > 0) {
-    clientX = e.changedTouches[0].clientX;
-    clientY = e.changedTouches[0].clientY;
-  } else {
-    clientX = e.clientX;
-    clientY = e.clientY;
-  }
-
-  const mx = (clientX - rect.left) * scaleX;
-  const my = (clientY - rect.top) * scaleY;
-
+  const mx = (cx - rect.left) * sx, my = (cy - rect.top) * sy;
   const col = Math.round((mx - PADDING) / CELL_SIZE);
   const row = Math.round((my - PADDING) / CELL_SIZE);
-
   if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) return;
-
-  const cx = PADDING + col * CELL_SIZE;
-  const cy = PADDING + row * CELL_SIZE;
-  const dist = Math.sqrt((mx - cx) ** 2 + (my - cy) ** 2);
+  const dist = Math.sqrt((mx - PADDING - col*CELL_SIZE)**2 + (my - PADDING - row*CELL_SIZE)**2);
   if (dist > STONE_RADIUS + 3) return;
-
   if (board[row][col] !== EMPTY) return;
 
   placeStone(row, col);
-  sendToPeer({ type: 'move', row, col });
+  send({ type: 'move', row, col });
 }
 
 function placeStone(row, col) {
   board[row][col] = currentTurn;
   moveHistory.push({ row, col, color: currentTurn });
   lastMove = { row, col };
-
-  // 清除悔棋状态
-  undoRequested = false;
-  peerUndoRequested = false;
+  undoRequested = false; peerUndoRequested = false;
   undoBanner.style.display = 'none';
 
   const winner = checkWin(row, col, currentTurn);
-  if (winner) {
-    gameOver = true;
-    drawBoard();
-    updateCanvasState();
-    updateUndoButton();
-    showResult(currentTurn === myColor ? 'win' : 'lose');
-    return;
-  }
-
-  if (isBoardFull()) {
-    gameOver = true;
-    drawBoard();
-    updateCanvasState();
-    updateUndoButton();
-    showResult('draw');
-    return;
-  }
+  if (winner) { gameOver = true; drawBoard(); updateCanvasState(); updateUndoUI(); showResult(currentTurn === myColor ? 'win' : 'lose'); return; }
+  if (isBoardFull()) { gameOver = true; drawBoard(); updateCanvasState(); updateUndoUI(); showResult('draw'); return; }
 
   currentTurn = currentTurn === BLACK ? WHITE : BLACK;
-  drawBoard();
-  updateTurnDisplay();
-  updateCanvasState();
-  updateUndoButton();
+  drawBoard(); updateTurnDisplay(); updateCanvasState(); updateUndoUI();
 }
 
 function checkWin(row, col, color) {
-  const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
-  for (const [dr, dc] of directions) {
-    let count = 1;
-    for (let i = 1; i < 5; i++) {
-      const r = row + dr * i, c = col + dc * i;
-      if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) break;
-      if (board[r][c] !== color) break;
-      count++;
-    }
-    for (let i = 1; i < 5; i++) {
-      const r = row - dr * i, c = col - dc * i;
-      if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) break;
-      if (board[r][c] !== color) break;
-      count++;
-    }
-    if (count >= 5) return color;
+  for (const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]) {
+    let n = 1;
+    for (let i = 1; i < 5; i++) { const r=row+dr*i, c=col+dc*i; if (r<0||r>=BOARD_SIZE||c<0||c>=BOARD_SIZE||board[r][c]!==color) break; n++; }
+    for (let i = 1; i < 5; i++) { const r=row-dr*i, c=col-dc*i; if (r<0||r>=BOARD_SIZE||c<0||c>=BOARD_SIZE||board[r][c]!==color) break; n++; }
+    if (n >= 5) return color;
   }
   return null;
 }
 
-function isBoardFull() {
-  for (let r = 0; r < BOARD_SIZE; r++)
-    for (let c = 0; c < BOARD_SIZE; c++)
-      if (board[r][c] === EMPTY) return false;
-  return true;
-}
+function isBoardFull() { return board.every(row => row.every(cell => cell !== EMPTY)); }
 
 // ==================== 悔棋 ====================
-function updateUndoButton() {
-  if (!conn || gameOver) {
-    btnUndo.disabled = true;
-    undoPanel.style.display = 'none';
-    return;
-  }
-  undoPanel.style.display = 'block';
-
-  // 可以悔棋的条件：有至少2步历史，且现在是对方回合（我刚下过）
-  const canUndo = moveHistory.length >= 2 && currentTurn !== myColor && !undoRequested;
-  btnUndo.disabled = !canUndo;
-  if (undoRequested) {
-    btnUndo.textContent = '⏳ 等待回应...';
-  } else {
-    btnUndo.textContent = '↩ 请求悔棋';
-  }
+function updateUndoUI() {
+  if (gameOver || !myColor) { btnUndo.disabled = true; undoHint.style.display = 'none'; return; }
+  undoHint.style.display = 'block';
+  if (undoRequested) { btnUndo.disabled = true; btnUndo.textContent = '⏳ 等待回应...'; }
+  else if (moveHistory.length >= 2 && currentTurn !== myColor) {
+    btnUndo.disabled = false; btnUndo.textContent = '↩ 请求悔棋';
+  } else { btnUndo.disabled = true; btnUndo.textContent = '↩ 请求悔棋'; }
 }
 
 function requestUndo() {
-  if (undoRequested || peerUndoRequested) return;
+  if (undoRequested) return;
   undoRequested = true;
-  sendToPeer({ type: 'undo-request' });
-  btnUndo.disabled = true;
-  btnUndo.textContent = '⏳ 等待回应...';
-  showToast('已发送悔棋请求，等待对方同意...', 'warn');
+  send({ type: 'undo-request' });
+  updateUndoUI();
+  showToast('已发送悔棋请求', 'warn');
 }
 
 function handleUndoRequest() {
@@ -885,593 +639,211 @@ function handleUndoRequest() {
 
 function acceptUndo() {
   hideUndoOverlay();
-  // 撤销双方各一步
+  send({ type: 'undo-accept' });
   performUndo();
-  sendToPeer({ type: 'undo-accept' });
 }
 
 function rejectUndo() {
   hideUndoOverlay();
   peerUndoRequested = false;
-  sendToPeer({ type: 'undo-reject' });
+  send({ type: 'undo-reject' });
 }
 
 function performUndo() {
   if (moveHistory.length < 2) return;
-
-  // 撤销最后两步（对方一步 + 我一步）
-  const step2 = moveHistory.pop(); // 我的最后一步
-  const step1 = moveHistory.pop(); // 对方的最后一步
-
-  board[step2.row][step2.col] = EMPTY;
-  board[step1.row][step1.col] = EMPTY;
-
-  // 恢复回合为对方（先手方应该下）
-  currentTurn = step1.color;
-
-  // 恢复最后一步显示
+  const s2 = moveHistory.pop(), s1 = moveHistory.pop();
+  board[s2.row][s2.col] = EMPTY;
+  board[s1.row][s1.col] = EMPTY;
+  currentTurn = s1.color;
   lastMove = moveHistory.length > 0 ? moveHistory[moveHistory.length - 1] : null;
-
-  undoRequested = false;
-  peerUndoRequested = false;
+  undoRequested = false; peerUndoRequested = false;
   undoBanner.style.display = 'none';
-
-  drawBoard();
-  updateTurnDisplay();
-  updateCanvasState();
-  updateUndoButton();
+  drawBoard(); updateTurnDisplay(); updateCanvasState(); updateUndoUI();
 }
 
-function hideUndoOverlay() {
-  overlayUndo.style.display = 'none';
+function hideUndoOverlay() { overlayUndo.style.display = 'none'; }
+
+// ==================== UI ====================
+function updateTurnDisplay() {
+  if (gameOver || !myColor) return;
+  const isMine = currentTurn === myColor;
+  turnIndicator.innerHTML = `<div class="stone-icon ${currentTurn===BLACK?'stone-black':'stone-white'}"></div>
+    <span>${isMine?'轮到你了':'等待对手...'} (${currentTurn===BLACK?'黑子':'白子'})</span>`;
 }
 
-// ==================== 结果显示 ====================
-function showResult(result) {
-  if (result === 'win') {
-    resultIcon.textContent = '🏆';
-    resultText.textContent = '你赢了！';
-    resultText.style.color = '#F1C40F';
-  } else if (result === 'lose') {
-    resultIcon.textContent = '😔';
-    resultText.textContent = '你输了';
-    resultText.style.color = '#E74C3C';
-  } else {
-    resultIcon.textContent = '🤝';
-    resultText.textContent = '平局';
-    resultText.style.color = '#3498DB';
-  }
+function updateCanvasState() {
+  if (gameOver || currentTurn !== myColor) canvas.classList.add('disabled');
+  else canvas.classList.remove('disabled');
+}
+
+function updateYourColor() {
+  if (myColor === BLACK) yourColorEl.innerHTML = '你是 <b style="color:#fff">⬤ 黑子</b>（先手）';
+  else if (myColor === WHITE) yourColorEl.innerHTML = '你是 <b style="color:#ddd">◯ 白子</b>（后手）';
+  else yourColorEl.innerHTML = '—';
+}
+
+function setStatus(s) {
+  statusBadge.className = 'status-badge';
+  const m = { disconnected: ['s-disconnected','未连接'], connecting: ['s-connecting','连接中...'], connected: ['s-connected','已连接'], waiting: ['s-waiting','等待对手'] };
+  const [c,t] = m[s] || m.disconnected;
+  statusBadge.classList.add(c); statusText.textContent = t;
+}
+
+function showResult(r) {
+  if (r === 'win') { resultIcon.textContent = '🏆'; resultText.textContent = '你赢了！'; resultText.style.color = '#F1C40F'; }
+  else if (r === 'lose') { resultIcon.textContent = '😔'; resultText.textContent = '你输了'; resultText.style.color = '#E74C3C'; }
+  else { resultIcon.textContent = '🤝'; resultText.textContent = '平局'; resultText.style.color = '#3498DB'; }
   overlayResult.style.display = 'flex';
   btnRematch.style.display = 'block';
 }
 
-function hideResultOverlay() {
-  overlayResult.style.display = 'none';
-}
+function hideResultOverlay() { overlayResult.style.display = 'none'; }
 
-// ==================== UI 更新 ====================
-function updateTurnDisplay() {
-  if (gameOver) return;
-  const isMyTurn = currentTurn === myColor;
-  const stoneClass = currentTurn === BLACK ? 'stone-black' : 'stone-white';
-  const colorName = currentTurn === BLACK ? '黑子' : '白子';
-  turnIndicator.innerHTML = `
-    <div class="stone-icon ${stoneClass}"></div>
-    <span>${isMyTurn ? '轮到你了' : '等待对手...'} (${colorName})</span>
-  `;
-}
-
-function updateCanvasState() {
-  if (gameOver || !conn || currentTurn !== myColor) {
-    canvas.classList.add('disabled');
-  } else {
-    canvas.classList.remove('disabled');
-  }
-}
-
-function updateYourColor() {
-  if (myColor === BLACK) {
-    yourColorEl.innerHTML = '你是 <b style="color:#fff">⬤ 黑子</b>（先手）';
-  } else if (myColor === WHITE) {
-    yourColorEl.innerHTML = '你是 <b style="color:#ddd">◯ 白子</b>（后手）';
-  } else {
-    yourColorEl.innerHTML = '—';
-  }
-}
-
-function setStatus(status) {
-  statusBadge.className = 'status-badge';
-  const map = {
-    'disconnected': ['status-disconnected', '未连接'],
-    'connecting': ['status-connecting', '连接中...'],
-    'connected': ['status-connected', '已连接'],
-    'waiting': ['status-waiting', '等待对手'],
-    'timeout': ['status-timeout', '连接超时'],
-  };
-  const [cls, text] = map[status] || map['disconnected'];
-  statusBadge.classList.add(cls);
-  statusText.textContent = text;
-}
-
-// ==================== Toast ====================
 let toastTimer;
 function showToast(msg, type) {
   clearTimeout(toastTimer);
-  toast.textContent = msg;
-  toast.className = 'toast show';
+  toast.textContent = msg; toast.className = 'toast show';
   if (type === 'warn') toast.classList.add('warn');
-  toastTimer = setTimeout(() => toast.classList.remove('show', 'warn'), 2500);
+  toastTimer = setTimeout(() => toast.classList.remove('show','warn'), 2500);
 }
 
-// ==================== P2P 通信 ====================
-function initPeer() {
-  return new Promise((resolve, reject) => {
-    if (peer && !peer.destroyed) {
-      peer.destroy();
-    }
-    peer = null;
-
-    const p = new Peer({
-      // 多组 STUN/TURN 服务器优化连接
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-          { urls: 'stun:stun3.l.google.com:19302' },
-          { urls: 'stun:stun4.l.google.com:19302' },
-          // 免费 TURN 备选（numb.viagenie.ca）
-          {
-            urls: 'turn:numb.viagenie.ca:3478',
-            credential: 'muazkh',
-            username: 'webrtc@live.com'
-          },
-          // OpenRelay TURN
-          {
-            urls: 'turn:openrelay.metered.ca:80',
-            credential: 'openrelayproject',
-            username: 'openrelayproject'
-          },
-          {
-            urls: 'turn:openrelay.metered.ca:443',
-            credential: 'openrelayproject',
-            username: 'openrelayproject'
-          },
-        ],
-        iceCandidatePoolSize: 4,
-        iceTransportPolicy: 'all',
-      },
-      debug: 0,
-    });
-
-    const timeout = setTimeout(() => {
-      reject(new Error('PeerJS 初始化超时'));
-    }, 20000);
-
-    p.on('open', (id) => {
-      clearTimeout(timeout);
-      myPeerId = id;
-      peer = p;
-      resolve(id);
-    });
-
-    p.on('connection', (incomingConn) => {
-      if (conn && conn.open) {
-        incomingConn.close();
-        return;
-      }
-      conn = incomingConn;
-      bindConnectionEvents(conn);
-    });
-
-    p.on('error', (err) => {
-      clearTimeout(timeout);
-      console.error('Peer error:', err);
-      if (err.type === 'peer-unavailable') {
-        showToast('找不到该房间，请检查房间号', 'warn');
-      } else if (err.type === 'network' || err.type === 'server-error') {
-        showToast('网络错误，信令服务器可能不可达', 'warn');
-        connTip.innerHTML = '提示：PeerJS 信令服务可能被墙，可尝试双方切换网络环境';
-      }
-      reject(err);
-      resetAll();
-    });
-
-    p.on('disconnected', () => {
-      if (peer && !peer.destroyed) {
-        peer.reconnect();
-      }
-    });
-  });
-}
-
-function bindConnectionEvents(c) {
-  c.on('data', handlePeerMessage);
-
-  c.on('open', () => {
-    clearTimeout(connectTimer);
-    conn = c;
-    onConnected();
-  });
-
-  c.on('close', () => {
-    showToast('对手已断开连接', 'warn');
-    resetAll();
-  });
-
-  c.on('error', (err) => {
-    console.error('Connection error:', err);
-    if (!conn || !conn.open) {
-      setStatus('timeout');
-      connTip.innerHTML = '连接失败，请检查网络后<a href="javascript:void(0)" onclick="retryConnect()">重试</a>';
-      btnRetry.style.display = 'block';
-    }
-  });
-
-  // ICE 状态监控
-  c.on('iceStateChanged', (state) => {
-    console.log('ICE state:', state);
-    if (state === 'failed') {
-      setStatus('timeout');
-      connTip.innerHTML = 'P2P 直连失败（NAT穿透问题），可尝试<a href="javascript:void(0)" onclick="retryConnect()">重试</a>或切换网络';
-      btnRetry.style.display = 'block';
-    } else if (state === 'connected') {
-      connTip.innerHTML = '';
-      btnRetry.style.display = 'none';
-    }
-  });
-}
-
-function onConnected() {
-  setStatus('connected');
-  connActions.style.display = 'none';
-  btnLeave.style.display = 'block';
-  btnRetry.style.display = 'none';
-  connTip.innerHTML = '';
-  retryCount = 0;
-
-  if (myColor === BLACK) {
-    showToast('对手已加入，你先手！');
-  } else {
-    showToast('已加入房间！');
-  }
-
-  updateCanvasState();
-  updateTurnDisplay();
-  updateYourColor();
-  updateUndoButton();
-
-  if (myColor === WHITE) {
-    sendToPeer({ type: 'sync-request' });
-  }
-}
-
-function handlePeerMessage(data) {
-  switch (data.type) {
-    case 'move':
-      if (gameOver) return;
-      if (currentTurn === myColor) return;
-      if (board[data.row][data.col] !== EMPTY) return;
-      placeStone(data.row, data.col);
-      break;
-
-    case 'sync-request':
-      sendToPeer({
-        type: 'sync',
-        board: board,
-        currentTurn: currentTurn,
-        gameOver: gameOver,
-        lastMove: lastMove,
-        moveHistory: moveHistory,
-        undoRequested: undoRequested,
-        peerUndoRequested: peerUndoRequested,
-      });
-      break;
-
-    case 'sync':
-      board = data.board;
-      currentTurn = data.currentTurn;
-      gameOver = data.gameOver;
-      lastMove = data.lastMove;
-      moveHistory = data.moveHistory || [];
-      undoRequested = data.undoRequested || false;
-      peerUndoRequested = data.peerUndoRequested || false;
-      drawBoard();
-      updateTurnDisplay();
-      updateCanvasState();
-      updateUndoButton();
-      break;
-
-    case 'rematch-request':
-      peerRematchRequested = true;
-      if (rematchRequested) {
-        startNewGame();
-      } else {
-        btnRematch.style.display = 'block';
-        btnRematch.textContent = '🔄 对手想再来一局';
-        btnRematch.disabled = false;
-      }
-      break;
-
-    case 'rematch-accept':
-      startNewGame();
-      break;
-
-    // ---- 悔棋协议 ----
-    case 'undo-request':
-      handleUndoRequest();
-      break;
-
-    case 'undo-accept':
-      // 对手同意了我的悔棋请求
-      performUndo();
-      showToast('悔棋成功！');
-      break;
-
-    case 'undo-reject':
-      // 对手拒绝了我的悔棋请求
-      undoRequested = false;
-      undoBanner.style.display = 'block';
-      undoBanner.textContent = '对方拒绝了悔棋请求';
-      setTimeout(() => { undoBanner.style.display = 'none'; }, 3000);
-      updateUndoButton();
-      showToast('对方拒绝了悔棋', 'warn');
-      break;
-  }
-}
-
-function sendToPeer(data) {
-  if (conn && conn.open) {
-    conn.send(data);
-  }
-}
-
-// ==================== 按钮事件 ====================
+// ==================== 按钮 ====================
 btnCreate.addEventListener('click', async () => {
   btnCreate.disabled = true;
-  btnCreate.textContent = '⏳ 正在创建...';
+  btnCreate.textContent = '⏳ 创建中...';
   setStatus('connecting');
-  connTip.innerHTML = '正在连接信令服务器...';
-  retryCount = 0;
+  connTip.innerHTML = '正在连接服务器...';
+
+  const roomId = randomRoomId();
+  myRoomId = roomId;
 
   try {
-    await initPeer();
-  } catch (e) {
+    const result = await connectWs(roomId);
+    if (result.type === 'joined') {
+      roomDisplay.style.display = 'block';
+      roomIdValue.textContent = roomId;
+      btnCreate.style.display = 'none';
+      connActions.querySelector('.input-row').style.display = 'none';
+      myColor = result.color === 'black' ? BLACK : WHITE;
+      initBoard();
+      updateYourColor();
+      updateTurnDisplay();
+      showToast('房间已创建，等待对手...');
+    }
+  } catch(e) {
     btnCreate.disabled = false;
     btnCreate.textContent = '🎮 创建房间';
-    setStatus('timeout');
-    connTip.innerHTML = '创建失败：' + (e.message || '未知错误') + '。<a href="javascript:void(0)" onclick="retryCreate()">重试</a>';
-    return;
+    setStatus('disconnected');
+    connTip.innerHTML = '连接失败：' + (e.message || '服务器不可达') + '<br>请确认服务器地址正确';
   }
-
-  roomDisplay.style.display = 'block';
-  roomIdValue.textContent = myPeerId;
-  connActions.querySelector('.input-row').style.display = 'none';
-  btnCreate.style.display = 'none';
-
-  myColor = BLACK;
-  initBoard();
-  setStatus('waiting');
-  updateYourColor();
-  connTip.innerHTML = '等待好友输入房间号加入...';
-
-  showToast('等待对手加入...');
-  btnCreate.disabled = false;
-  btnCreate.textContent = '🎮 创建房间';
 });
 
 btnJoin.addEventListener('click', async () => {
-  const targetId = inputRoomId.value.trim();
-  if (!targetId) { showToast('请输入房间号', 'warn'); return; }
+  const roomId = inputRoomId.value.trim();
+  if (!roomId) { showToast('请输入房间号', 'warn'); return; }
 
   btnJoin.disabled = true;
   btnJoin.textContent = '⏳';
   setStatus('connecting');
-  connTip.innerHTML = '正在连接信令服务器...';
-  retryCount = 0;
+  connTip.innerHTML = '正在加入房间...';
+  myRoomId = roomId;
 
   try {
-    await initPeer();
-  } catch (e) {
+    await connectWs(roomId);
+    // game-start 消息会触发初始化
+  } catch(e) {
     btnJoin.disabled = false;
     btnJoin.textContent = '加入';
-    setStatus('timeout');
-    connTip.innerHTML = '连接信令失败。<a href="javascript:void(0)" onclick="retryJoin()">重试</a>';
-    return;
+    setStatus('disconnected');
+    connTip.innerHTML = '加入失败：' + (e.message || '') + '<br>请确认房间号正确';
   }
-
-  setStatus('connecting');
-  connTip.innerHTML = `正在连接房间 ${targetId.slice(0,20)}...`;
-
-  myColor = WHITE;
-  initBoard();
-  updateYourColor();
-
-  const c = peer.connect(targetId, {
-    reliable: true,
-    serialization: 'json',
-    config: {
-      iceTransportPolicy: 'all',
-    },
-  });
-
-  conn = c;
-  bindConnectionEvents(c);
-
-  c.on('open', () => {
-    btnJoin.disabled = false;
-    btnJoin.textContent = '加入';
-    onConnected();
-  });
-
-  connectTimer = setTimeout(() => {
-    if (!conn || !conn.open) {
-      btnJoin.disabled = false;
-      btnJoin.textContent = '加入';
-      setStatus('timeout');
-      retryCount++;
-      if (retryCount < MAX_RETRIES) {
-        connTip.innerHTML = `连接超时（${retryCount}/${MAX_RETRIES}），正在重试...`;
-        conn.close();
-        conn = null;
-        // 自动重试
-        setTimeout(() => btnJoin.click(), 1500);
-      } else {
-        connTip.innerHTML = '多次连接失败。可能原因：<br>1. 房间号错误<br>2. 对方网络/NAT限制<br>3. PeerJS 信令被墙<br>建议双方切换网络后<a href="javascript:void(0)" onclick="retryJoin()">重试</a>';
-        btnRetry.style.display = 'block';
-        showToast('连接超时，请检查房间号或网络', 'warn');
-      }
-    }
-  }, 25000);
 });
 
 btnRetry.addEventListener('click', () => {
-  retryCount = 0;
   btnRetry.style.display = 'none';
-  connTip.innerHTML = '';
-  if (myColor === BLACK || !myColor) {
-    resetAll();
-    btnCreate.click();
-  } else {
-    // 重新加入
-    const prevId = inputRoomId.value.trim();
-    resetAll();
-    inputRoomId.value = prevId;
-    btnJoin.click();
+  if (myRoomId) {
+    setStatus('connecting');
+    connTip.innerHTML = '重连中...';
+    connectWs(myRoomId).catch(() => {});
   }
 });
 
-function retryConnect() {
-  btnRetry.click();
-}
-function retryCreate() {
-  resetAll();
-  btnCreate.click();
-}
-function retryJoin() {
-  const prevId = inputRoomId.value.trim();
-  resetAll();
-  inputRoomId.value = prevId;
-  btnJoin.click();
-}
-
 btnLeave.addEventListener('click', resetAll);
 
-btnUndo.addEventListener('click', () => {
-  if (undoRequested) return;
-  requestUndo();
-});
-
+btnUndo.addEventListener('click', requestUndo);
 btnAcceptUndo.addEventListener('click', acceptUndo);
 btnRejectUndo.addEventListener('click', rejectUndo);
 
 btnRematch.addEventListener('click', () => {
-  if (peerRematchRequested) {
-    sendToPeer({ type: 'rematch-accept' });
-    startNewGame();
-  } else {
-    rematchRequested = true;
-    btnRematch.textContent = '⏳ 等待对手同意...';
-    btnRematch.disabled = true;
-    sendToPeer({ type: 'rematch-request' });
-  }
+  if (peerRematchRequested) { send({ type: 'rematch-accept' }); startNewGame(); }
+  else { rematchRequested = true; btnRematch.textContent = '⏳ 等待对手同意...'; btnRematch.disabled = true; send({ type: 'rematch-request' }); }
 });
 
 btnPlayAgain.addEventListener('click', () => {
   hideResultOverlay();
   rematchRequested = true;
-  sendToPeer({ type: 'rematch-request' });
+  send({ type: 'rematch-request' });
   btnRematch.style.display = 'block';
   btnRematch.textContent = '⏳ 等待对手同意...';
   btnRematch.disabled = true;
 });
 
-btnCloseResult.addEventListener('click', () => {
-  hideResultOverlay();
-  if (gameOver) btnRematch.style.display = 'block';
-});
+btnCloseResult.addEventListener('click', () => { hideResultOverlay(); if (gameOver) btnRematch.style.display = 'block'; });
 
-// 点击房间号复制
 roomIdValue.addEventListener('click', () => {
   const id = roomIdValue.textContent;
   if (!id) return;
-  copyText(id).then(() => showToast('已复制房间号！'));
+  navigator.clipboard.writeText(id).then(() => showToast('已复制房间号！')).catch(() => {
+    const inp = document.createElement('input'); inp.value = id;
+    document.body.appendChild(inp); inp.select(); document.execCommand('copy');
+    document.body.removeChild(inp); showToast('已复制房间号！');
+  });
 });
 
-// 输入框回车加入
-inputRoomId.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') btnJoin.click();
-});
+inputRoomId.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnJoin.click(); });
 
 // ==================== 重置 ====================
 function startNewGame() {
   initBoard();
-  rematchRequested = false;
-  peerRematchRequested = false;
-  // 交换黑白
+  rematchRequested = false; peerRematchRequested = false;
   myColor = myColor === BLACK ? WHITE : BLACK;
   updateYourColor();
-  drawBoard();
-  updateTurnDisplay();
-  updateCanvasState();
-  updateUndoButton();
+  drawBoard(); updateTurnDisplay(); updateCanvasState(); updateUndoUI();
   showToast('新游戏开始！');
 }
 
 function resetAll() {
-  clearTimeout(connectTimer);
-  if (conn) { conn.close(); conn = null; }
-  if (peer) { peer.destroy(); peer = null; }
-  myColor = null;
-  retryCount = 0;
+  clearTimeout(reconnectTimer);
+  if (ws) { try { ws.close(1000); } catch(e) {} ws = null; }
+  myColor = null; myRoomId = null;
   initBoard();
   setStatus('disconnected');
   roomDisplay.style.display = 'none';
-  roomIdValue.textContent = '';
   connActions.style.display = '';
   connActions.querySelector('.input-row').style.display = '';
-  btnCreate.style.display = '';
-  btnCreate.disabled = false;
-  btnCreate.textContent = '🎮 创建房间';
-  btnJoin.disabled = false;
-  btnJoin.textContent = '加入';
-  btnLeave.style.display = 'none';
-  btnRetry.style.display = 'none';
+  btnCreate.style.display = ''; btnCreate.disabled = false; btnCreate.textContent = '🎮 创建房间';
+  btnJoin.disabled = false; btnJoin.textContent = '加入';
+  btnLeave.style.display = 'none'; btnRetry.style.display = 'none';
   btnRematch.style.display = 'none';
-  undoPanel.style.display = 'none';
   connTip.innerHTML = '';
-  hideResultOverlay();
-  hideUndoOverlay();
-  updateYourColor();
-  updateUndoButton();
+  hideResultOverlay(); hideUndoOverlay();
+  updateYourColor(); updateUndoUI();
   turnIndicator.innerHTML = '<span style="color:var(--text-light);font-size:12px;">等待对手加入...</span>';
   canvas.classList.add('disabled');
 }
 
-// ==================== 工具函数 ====================
-function copyText(text) {
-  return navigator.clipboard.writeText(text).catch(() => {
-    const input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-  });
+function randomRoomId() {
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let id = '';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
 }
 
-// ==================== 初始化 ====================
+// ==================== 初始 ====================
 initBoard();
 canvas.classList.add('disabled');
 setStatus('disconnected');
-
-console.log('🎮 五子棋 v2 已就绪');
-console.log('  改进: 连接优化 + 手机适配 + 悔棋确认');
-
-window.addEventListener('beforeunload', () => {
-  if (conn) conn.close();
-  if (peer) peer.destroy();
-});
+console.log('🎮 五子棋 v3 WebSocket 中继版已就绪');
 </script>
 </body>
 </html>

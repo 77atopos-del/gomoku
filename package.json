@@ -1,0 +1,12 @@
+{
+  "name": "gomoku",
+  "version": "2.0.0",
+  "description": "五子棋双人联机 - WebSocket中继版",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
